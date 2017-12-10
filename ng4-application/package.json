@@ -21,6 +21,7 @@
     "@angular/platform-browser": "^4.2.4",
     "@angular/platform-browser-dynamic": "^4.2.4",
     "@angular/router": "^4.2.4",
+    "angular2-websocket": "^0.9.5",
     "axios": "^0.17.1",
     "body-parser": "^1.18.2",
     "core-js": "^2.4.1",

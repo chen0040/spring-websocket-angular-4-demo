@@ -4,61 +4,84 @@ import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/map';
+import {$WebSocket, WebSocketSendMode} from 'angular2-websocket/angular2-websocket';
 
-import {ISpringUser} from "./spring-user";
-import {IAuthenticationResult} from "./authentication-result";
 
 @Injectable()
 export class AppService {
-  account: ISpringUser = null;
-  username: string;
-  _csrf: string;
-  _sessionId: string;
+
+  private ws: $WebSocket;
 
 
-  constructor(private _http: Http) {
+  constructor() {
 
   }
 
-  authenticate(username: string, password: string): Observable<IAuthenticationResult> {
-    let loginObj = {
-      username: username,
-      password: password
-    };
-    return this._http.post('./login', loginObj)
-      .map((response: Response) => <IAuthenticationResult> response.json())
-      .do( data => {
-          if(data.authenticated) {
-            this._sessionId = data.sessionId;
-            this._csrf = data._csrf;
-            this.username = username;
-          }
-          console.log("Authentication: " + JSON.stringify(data));
-      })
-      .catch(this.handleError);
+  closeWebsocket() {
+
+
+    this.ws.close(false);    // close
+    this.ws = null;
+
+    //this.ws.close(true);    // close immediately
   }
 
-  getAccount(): Observable<ISpringUser> {
-    const headers = new Headers();
-    headers.append('Content-Type', 'application/json');
-    headers.append('_csrf', this._csrf);
-    headers.append('JSESSIONID', this._sessionId);
+  connectWebsocket() {
+    // connect
+    this.ws = new $WebSocket("ws://localhost:8080/my-ws/websocket");
+    // you can send immediately after connect,
+    // data will cached until connect open and immediately send or connect fail.
 
-    const options = new RequestOptions({'headers': headers});
-    return this._http.get(
-      "account",
-      options
-    ).map((response: Response) => <ISpringUser> response.json())
-      .do( data => {
-        this.account = data;
-        console.log("Account: " + JSON.stringify(data));
-      })
-      .catch(this.handleError);
-  }
+    // when connect fail, websocket will reconnect or not,
+    // you can set {WebSocketConfig.reconnectIfNotNormalClose = true} to enable auto reconnect
+    // all cached data will lost when connect close if not reconnect
 
-  private handleError(error: Response) {
-    console.error(error);
-    return Observable.throw(error.json().error || 'Server error');
+    this.ws.onOpen((msg) => {
+
+      this.ws.send("CONNECT\naccept-version:1.1\nheart-beat:10000,10000\n\0").subscribe(
+        (msg)=> {
+          console.log("next", msg.data);
+        },
+        (msg)=> {
+          console.log("error", msg);
+        },
+        ()=> {
+          console.log("complete");
+        }
+      );
+      this.ws.send("SUBSCRIBE\nid:sub-001\ndestination:/topics/event\n\0").subscribe(
+        (msg)=> {
+          console.log("next", msg.data);
+        },
+        (msg)=> {
+          console.log("error", msg);
+        },
+        ()=> {
+          console.log("complete");
+        }
+      );
+    });
+
+
+    // set received message callback
+    this.ws.onMessage(
+      (msg: MessageEvent)=> {
+        console.log("onMessage ", msg.data);
+      },
+      {autoApply: false}
+    );
+
+    this.ws.getDataStream().subscribe(
+      res => {
+        var count = JSON.parse(res.data).value;
+        console.log('Got: ' + count);
+      },
+      function(e) { console.log('Error: ' + e.message); },
+      function() { console.log('Completed'); }
+    );
+
+
+
   }
 
 
