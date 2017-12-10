@@ -11,7 +11,7 @@ import {$WebSocket, WebSocketSendMode} from 'angular2-websocket/angular2-websock
 export class AppService {
 
   private ws: $WebSocket;
-
+  private subscribers = [];
 
   constructor() {
 
@@ -24,6 +24,10 @@ export class AppService {
     this.ws = null;
 
     //this.ws.close(true);    // close immediately
+  }
+
+  onMessage(handler) {
+    this.subscribers.push(handler);
   }
 
   connectWebsocket() {
@@ -57,7 +61,8 @@ export class AppService {
           console.log("complete");
         }
       );
-      this.ws.send("SUBSCRIBE\nid:sub-001\ndestination:/topics/event\n\n\0").subscribe(
+      var topic = "/topics/event";
+      this.ws.send("SUBSCRIBE\nid:sub-001\ndestination:" + topic + "\n\n\0").subscribe(
         (msg)=> {
           console.log("next", msg.data);
         },
@@ -76,6 +81,9 @@ export class AppService {
     this.ws.onMessage(
       (msg: MessageEvent)=> {
         console.log("onMessage ", msg.data);
+        for(var i=0; i < this.subscribers.length; ++i) {
+          this.subscribers[i](msg);
+        }
       },
       {autoApply: false}
     );

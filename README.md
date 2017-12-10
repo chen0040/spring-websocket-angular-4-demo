@@ -19,3 +19,18 @@ The spring-boot-application defines an end point at http://localhost:8080/my-ws 
 
 ### Angular 4 Application
 
+To run the angular application that communicate with the spring-boot-application:
+
+
+```bash 
+cd spring-websocket-angular-4-demo
+npm install
+ng serve
+```
+
+This will start the angular application at http://localhost:4200 
+
+The websocket implementation that subscribe to "/topics/event" websocket topic of the spring-boot-application can be found in the app.service.ts and app.component.ts
+
+
+

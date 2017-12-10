@@ -4,29 +4,12 @@
     Welcome to {{title}}!
   </h1>
 </div>
-<h2>Spring Authentication with admin account: </h2>
-<ul *ngIf="authenticationResult">
-  <li>
-    XSRF-TOKEN: {{authenticationResult._csrf}}
-  </li>
-  <li>
-    JSESSIONID: {{authenticationResult.sessionId}}
-  </li>
-  <li>
-    Authenticated: {{authenticationResult.authenticated}}
-  </li>
-</ul>
-
-<h2>Your authenticated account:</h2>
-<ul *ngIf="account">
-  <li>
-    Username: {{account.username}}
-  </li>
-  <li>
-    Name: {{account.firstName}}, {{account.lastName}}
-  </li>
-  <li>
-    Email: {{account.email}}
-  </li>
-</ul>
+<h2>Websocket message from spring-boot-application: </h2>
+<table *ngIf="messages">
+  <tr *ngFor="let message of messages">
+    <td>
+      {{message}}
+    </td>
+  </tr>
+</table>
 
