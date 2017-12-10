@@ -38,7 +38,15 @@ export class AppService {
 
     this.ws.onOpen((msg) => {
 
-      this.ws.send("CONNECT\naccept-version:1.1\nheart-beat:10000,10000\n\0").subscribe(
+      this.ws.getDataStream().subscribe(
+        res => {
+          console.log(res);
+        },
+        function(e) { console.log('Error: ' + e.message); },
+        function() { console.log('Completed'); }
+      );
+
+      this.ws.send("CONNECT\naccept-version:1.1\nheart-beat:10000,10000\n\n\0").subscribe(
         (msg)=> {
           console.log("next", msg.data);
         },
@@ -49,7 +57,7 @@ export class AppService {
           console.log("complete");
         }
       );
-      this.ws.send("SUBSCRIBE\nid:sub-001\ndestination:/topics/event\n\0").subscribe(
+      this.ws.send("SUBSCRIBE\nid:sub-001\ndestination:/topics/event\n\n\0").subscribe(
         (msg)=> {
           console.log("next", msg.data);
         },
@@ -60,6 +68,7 @@ export class AppService {
           console.log("complete");
         }
       );
+
     });
 
 
@@ -71,14 +80,7 @@ export class AppService {
       {autoApply: false}
     );
 
-    this.ws.getDataStream().subscribe(
-      res => {
-        var count = JSON.parse(res.data).value;
-        console.log('Got: ' + count);
-      },
-      function(e) { console.log('Error: ' + e.message); },
-      function() { console.log('Completed'); }
-    );
+
 
 
 
