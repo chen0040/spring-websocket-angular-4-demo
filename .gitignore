@@ -1,0 +1,43 @@
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# BlueJ files
+*.ctxt
+
+spring-boot-application/*.iml
+spring-boot-application/.idea/
+spring-boot-application/target/
+spring-boot-application/out/
+
+ng4-application/node_modules/
+
+*.iml
+.idea/
+
+out/
+
+bin/*.jar
+
+target/
+
+csharp-client-proj/csharp-client-proj/bin
+csharp-client-proj/csharp-client-proj/obj
+csharp-client-proj/csharp-client-proj.csproj.user
+csharp-client-proj/packages
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
